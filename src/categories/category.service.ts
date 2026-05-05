@@ -30,7 +30,7 @@ export class CategoryService {
     return this.prisma.category.findMany();
   }
 
-  async findOne(id: string) {
+  async findOne(id: number) {
     const category = await this.prisma.category.findUnique({
       where: { id },
       include: { articles: true } // جلب المقالات التابعة للقسم أيضاً
@@ -40,7 +40,7 @@ export class CategoryService {
     return category;
   }
 
-  async update(id: string, updateCategoryDto: UpdateCategoryDto) {
+  async update(id: number, updateCategoryDto: UpdateCategoryDto) {
     const category = await this.prisma.category.findUnique({ where: { id } });
     if (!category) throw new NotFoundException('Category not found');
 
@@ -63,7 +63,7 @@ export class CategoryService {
     });
   }
 
-  async remove(id: string) {
+  async remove(id: number) {
     const category = await this.prisma.category.findUnique({ where: { id } });
     if (!category) throw new NotFoundException('Category not found');
 
@@ -77,3 +77,4 @@ export class CategoryService {
     return { message: 'Category successfully deleted' };
   }
 }
+

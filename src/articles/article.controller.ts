@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, UseGuards, Req, Query , Delete} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, UseGuards, Req, Query , Delete, ParseIntPipe} from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
@@ -20,7 +20,7 @@ export class ArticleController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.articleService.findOne(id);
   }
 
@@ -33,27 +33,28 @@ export class ArticleController {
 
   @Patch(':id')
   @Roles('WRITER', 'EDITOR', 'ADMIN') // Editor, Admin could also edit typos
-  update(@Param('id') id: string, @Body() updateArticleDto: UpdateArticleDto, @Req() request: any) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateArticleDto: UpdateArticleDto, @Req() request: any) {
     const user = request[CURRENT_USER_KEY];
     return this.articleService.update(id, updateArticleDto, user);
   }
 
   @Post(':id/submit')
   @Roles('WRITER')
-  submitForReview(@Param('id') id: string, @Req() request: any) {
+  submitForReview(@Param('id', ParseIntPipe) id: number, @Req() request: any) {
     const user = request[CURRENT_USER_KEY];
     return this.articleService.submitForReview(id, user.id);
   }
 
   @Post(':id/review')
   @Roles('EDITOR', 'ADMIN')
-  reviewArticle(@Param('id') id: string, @Body() updateArticleStatusDto: UpdateArticleStatusDto) {
+  reviewArticle(@Param('id', ParseIntPipe) id: number, @Body() updateArticleStatusDto: UpdateArticleStatusDto) {
     return this.articleService.reviewArticle(id, updateArticleStatusDto.status as any);
   }
 
   @Delete(':id')
   @Roles('ADMIN')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseIntPipe) id: number) {
     return this.articleService.remove(id);
   }
 }
+

@@ -19,9 +19,8 @@ enum ArticleStatus {
   REJECTED
 }
 
-
 model Role {
-  id          String   @id @default(uuid())
+  id          Int      @id @default(autoincrement())
   name        String   @unique
   code        String   @unique
   description String?
@@ -32,17 +31,15 @@ model Role {
   @@map("roles")
 }
 
-
-
 model User {
-  id        String    @id @default(uuid())
+  id        Int       @id @default(autoincrement())
   username  String    @unique
   email     String    @unique
   password  String
   fullName  String?
   isActive  Boolean   @default(true)
-  roleId    String
-  role      Role      @relation(fields: [roleId],  references: [id], onDelete: Restrict)
+  roleId    Int
+  role      Role      @relation(fields: [roleId], references: [id], onDelete: Restrict)
   articles  Article[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -52,9 +49,8 @@ model User {
   @@map("users")
 }
 
-
 model Category {
-  id          String    @id @default(uuid())
+  id          Int       @id @default(autoincrement())
   name        String    @unique
   slug        String    @unique
   description String?
@@ -66,19 +62,17 @@ model Category {
   @@map("categories")
 }
 
-
 model Article {
-  id          String        @id @default(uuid())
+  id          Int           @id @default(autoincrement())
   title       String
   slug        String        @unique
   content     String        @db.Text
-  coverImage  String?
-  categoryId  String
+  categoryId  Int
   category    Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   status      ArticleStatus @default(DRAFT)
-  authorId    String
+  authorId    Int
   author      User          @relation(fields: [authorId], references: [id], onDelete: Restrict)
-  publishedAt DateTime?     
+  publishedAt DateTime?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   deletedAt   DateTime?

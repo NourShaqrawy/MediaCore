@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, IsEnum } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsEnum, IsNumber } from 'class-validator';
 
 export class CreateArticleDto {
     @IsNotEmpty()
@@ -13,11 +13,10 @@ export class CreateArticleDto {
     @IsString()
     content!: string;
 
-    @IsOptional()
-    @IsString()
-    coverImage?: string;
-
     @IsNotEmpty()
-    @IsString()
-    categoryId!: string;
+    @IsNumber()
+    categoryId!: number;
 }
+
+
+

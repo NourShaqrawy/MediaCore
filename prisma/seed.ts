@@ -29,11 +29,10 @@ async function main() {
   const adminFullName = process.env.ADMIN_FULLNAME || 'Administrator';
 
   if (!adminEmail || !adminPassword) {
-    console.warn('⚠️  ADMIN_EMAIL or ADMIN_PASSWORD is not set in .env. Skipping Admin seed.');
+    console.warn('  ADMIN_EMAIL or ADMIN_PASSWORD is not set in .env. Skipping Admin seed.');
     return;
   }
 
-  // Check if admin already exists
   const existingAdmin = await prisma.user.findFirst({
     where: {
       OR: [{ email: adminEmail }, { username: adminUsername }]
@@ -63,7 +62,6 @@ async function main() {
   } else {
     console.log('  Admin user already exists. Skipping creation.');
   }
-  // 3. Seed Default Categories
   const defaultCategories = [
     { name: 'Politics', slug: 'politics', description: 'Political news and articles' },
     { name: 'Sports', slug: 'sports', description: 'Sports news globally' },
@@ -78,7 +76,7 @@ async function main() {
       create: cat,
     });
   }
-  console.log('✅ Default Categories seeded successfully.');}
+  console.log(' Default Categories seeded successfully.');}
 
 main()
   .catch((e) => {

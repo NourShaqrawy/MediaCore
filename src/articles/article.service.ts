@@ -16,7 +16,7 @@ export class ArticleService {
     }
 
     // عرض مقال واحد
-    async findOne(id: string) {
+    async findOne(id: number) {
         const article = await this.prisma.article.findUnique({
             where: { id },
             include: { author: { select: { fullName: true, username: true } }, category: true }
@@ -26,7 +26,7 @@ export class ArticleService {
     }
 
     // إنشاء مقال (خاص بالكاتب)
-    async create(createArticleDto: CreateArticleDto, authorId: string) {
+    async create(createArticleDto: CreateArticleDto, authorId: number) {
         // التحقق من وجود مسار URL (slug) مسبقا
         const existingCategory = await this.prisma.category.findUnique({ where: { id: createArticleDto.categoryId } });
         if (!existingCategory) throw new BadRequestException('Category not found');
@@ -44,7 +44,7 @@ export class ArticleService {
     }
 
     // تعديل مقال (يجب أن يتحقق من الصلاحيات والملكية)
-    async update(id: string, updateArticleDto: UpdateArticleDto, user: any) {
+    async update(id: number, updateArticleDto: UpdateArticleDto, user: any) {
         const article = await this.prisma.article.findUnique({ where: { id } });
         if (!article || article.deletedAt) throw new NotFoundException('Article not found');
 
@@ -65,7 +65,7 @@ export class ArticleService {
     }
 
     // إرسال المقال للمراجعة (خاص بالكاتب)
-    async submitForReview(id: string, authorId: string) {
+    async submitForReview(id: number, authorId: number) {
         const article = await this.prisma.article.findUnique({ where: { id } });
         if (!article || article.deletedAt) throw new NotFoundException('Article not found');
 
@@ -84,7 +84,7 @@ export class ArticleService {
     }
 
     // مراجعة المقال (قبول / رفض) - خاص بالمحرر أو المدير
-    async reviewArticle(id: string, status : ArticleStatus) {
+    async reviewArticle(id: number, status : ArticleStatus) {
         const article = await this.prisma.article.findUnique({ where: { id } });
         if (!article || article.deletedAt) throw new NotFoundException('Article not found');
         if (status !== ArticleStatus.PUBLISHED && status !== ArticleStatus.REJECTED) {
@@ -106,7 +106,7 @@ export class ArticleService {
 
     }
 
-    async remove(id: string) {
+    async remove(id: number) {
         const article = await this.prisma.article.findUnique({ where: { id } });
         if (!article || article.deletedAt) throw new NotFoundException('Article not found');
 
@@ -116,3 +116,4 @@ export class ArticleService {
         });
     }
 }
+

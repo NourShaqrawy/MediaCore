@@ -26,7 +26,7 @@ export class UserService {
         });
     }
 
-    async findOne(id: string) {
+    async findOne(id: number) {
         const user = await this.prisma.user.findUnique({
             where: { id },
             select: {
@@ -52,7 +52,7 @@ export class UserService {
         return user;
     }
 
-    async update(id: string, updateUserDto: UpdateUserDto) {
+    async update(id: number, updateUserDto: UpdateUserDto) {
         const user = await this.prisma.user.findUnique({ where: { id } });
         if (!user) {
             throw new NotFoundException('User not found');
@@ -109,7 +109,7 @@ export class UserService {
         return { message: 'User updated successfully', user: updatedUser };
     }
 
-    async remove(id: string) {
+    async remove(id: number) {
         const user = await this.prisma.user.findUnique({ where: { id } });
         if (!user) {
             throw new NotFoundException('User not found');
@@ -122,3 +122,4 @@ export class UserService {
         return { message: 'User deleted successfully' };
     }
 }
+
