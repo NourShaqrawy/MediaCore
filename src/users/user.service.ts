@@ -60,7 +60,6 @@ export class UserService {
 
         const dataToUpdate: any = { ...updateUserDto };
 
-        // Handle Role update
         if (updateUserDto.roleCode) {
             const role = await this.prisma.role.findUnique({ where: { code: updateUserDto.roleCode } });
             if (!role) {
@@ -70,13 +69,11 @@ export class UserService {
             delete dataToUpdate.roleCode;
         }
 
-        // Handle Password update
         if (updateUserDto.password) {
             const salt = await bcrypt.genSalt(10);
             dataToUpdate.password = await bcrypt.hash(updateUserDto.password, salt);
         }
 
-        // Check uniqueness if email or username is being updated
         if (updateUserDto.email || updateUserDto.username) {
             const existingUser = await this.prisma.user.findFirst({
                 where: {

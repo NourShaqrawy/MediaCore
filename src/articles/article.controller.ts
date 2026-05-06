@@ -1,10 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, UseGuards, Req, Query , Delete, ParseIntPipe} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, UseGuards, Req, Query , Delete, ParseIntPipe, ValidationPipe} from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { AuthGuard } from '../auth/guard/auth.guard';
 import { RolesGuard } from '../auth/guard/roles.guard';
-import { Roles } from '../auth/guard/roles.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { CURRENT_USER_KEY } from '../utils/constant';
 import { ArticleStatus } from '../generated/prisma/client';
 import { UpdateArticleStatusDto } from './dto/update-article-status.dto';
@@ -25,14 +25,14 @@ export class ArticleController {
   }
 
   @Post()
-  @Roles('WRITER', 'ADMIN') // أضفنا أدمن كخيار إضافي أو يمكن حصره بالكاتب فقط
+  @Roles('WRITER', 'ADMIN')
   create(@Body() createArticleDto: CreateArticleDto, @Req() request: any) {
     const user = request[CURRENT_USER_KEY];
     return this.articleService.create(createArticleDto, user.id);
   }
 
   @Patch(':id')
-  @Roles('WRITER', 'EDITOR', 'ADMIN') // Editor, Admin could also edit typos
+  @Roles('WRITER', 'EDITOR', 'ADMIN') 
   update(@Param('id', ParseIntPipe) id: number, @Body() updateArticleDto: UpdateArticleDto, @Req() request: any) {
     const user = request[CURRENT_USER_KEY];
     return this.articleService.update(id, updateArticleDto, user);

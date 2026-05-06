@@ -52,20 +52,17 @@ model User {
 model Category {
   id          Int       @id @default(autoincrement())
   name        String    @unique
-  slug        String    @unique
   description String?
   articles    Article[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  @@index([slug])
   @@map("categories")
 }
 
 model Article {
   id          Int           @id @default(autoincrement())
   title       String
-  slug        String        @unique
   content     String        @db.Text
   categoryId  Int
   category    Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
@@ -77,7 +74,6 @@ model Article {
   updatedAt   DateTime      @updatedAt
   deletedAt   DateTime?
 
-  @@index([slug])
   @@index([status])
   @@index([authorId])
   @@index([categoryId])

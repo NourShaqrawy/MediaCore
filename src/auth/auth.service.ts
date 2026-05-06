@@ -70,7 +70,7 @@ export class AuthenticateService {
                 ]
             },
             include: {
-                role: true // للوصول لبيانات الصلاحية (Role) وإضافتها للـ Token
+                role: true 
             }
         });
 

@@ -7,7 +7,6 @@ import { ArticleStatus } from '../generated/prisma/client';
 export class ArticleService {
     constructor(private readonly prisma: PrismaService) { }
 
-    // عرض كل المقالات (مع فلترة للحالة إن لزم)
     async findAll(status?: ArticleStatus) {
         return this.prisma.article.findMany({
             where: { status, deletedAt: null },
@@ -15,8 +14,11 @@ export class ArticleService {
         });
     }
 
-    // عرض مقال واحد
     async findOne(id: number) {
+
+        if (isNaN(Number(id))) {
+            throw new BadRequestException("Author ID must be a number");
+        }
         const article = await this.prisma.article.findUnique({
             where: { id },
             include: { author: { select: { fullName: true, username: true } }, category: true }
@@ -25,30 +27,27 @@ export class ArticleService {
         return article;
     }
 
-    // إنشاء مقال (خاص بالكاتب)
     async create(createArticleDto: CreateArticleDto, authorId: number) {
-        // التحقق من وجود مسار URL (slug) مسبقا
+
+        if (isNaN(Number(authorId))) {
+            throw new BadRequestException("Author ID must be a number");
+        }
         const existingCategory = await this.prisma.category.findUnique({ where: { id: createArticleDto.categoryId } });
         if (!existingCategory) throw new BadRequestException('Category not found');
-
-        const existingSlug = await this.prisma.article.findUnique({ where: { slug: createArticleDto.slug } });
-        if (existingSlug) throw new BadRequestException('Slug already exists');
 
         return this.prisma.article.create({
             data: {
                 ...createArticleDto,
                 authorId,
-                status: ArticleStatus.DRAFT, // المقال الجديد يبدأ كمسودة دائماً
+                status: ArticleStatus.DRAFT, 
             }
         });
     }
 
-    // تعديل مقال (يجب أن يتحقق من الصلاحيات والملكية)
     async update(id: number, updateArticleDto: UpdateArticleDto, user: any) {
         const article = await this.prisma.article.findUnique({ where: { id } });
         if (!article || article.deletedAt) throw new NotFoundException('Article not found');
 
-        // إذا كان المستخدم كاتب، فيجب أن يتأكد أن المقال له وأنه ليس منشوراً مثلاً
         if (user.role === 'WRITER') {
             if (article.authorId !== user.id) {
                 throw new ForbiddenException('You can only edit your own articles');
@@ -64,7 +63,6 @@ export class ArticleService {
         });
     }
 
-    // إرسال المقال للمراجعة (خاص بالكاتب)
     async submitForReview(id: number, authorId: number) {
         const article = await this.prisma.article.findUnique({ where: { id } });
         if (!article || article.deletedAt) throw new NotFoundException('Article not found');
@@ -83,8 +81,8 @@ export class ArticleService {
         });
     }
 
-    // مراجعة المقال (قبول / رفض) - خاص بالمحرر أو المدير
-    async reviewArticle(id: number, status : ArticleStatus) {
+    async reviewArticle(id: number, status: ArticleStatus) {
+
         const article = await this.prisma.article.findUnique({ where: { id } });
         if (!article || article.deletedAt) throw new NotFoundException('Article not found');
         if (status !== ArticleStatus.PUBLISHED && status !== ArticleStatus.REJECTED) {
@@ -102,7 +100,6 @@ export class ArticleService {
                 publishedAt: status === ArticleStatus.PUBLISHED ? new Date() : null
             }
         });
-        // حذف مقال (بشكل ناعم Soft Delete - خاص بالأدمن فقط)
 
     }
 

@@ -1,1 +1,1 @@
-export const CURRENT_USER_KEY = "WRITER"
+export const CURRENT_USER_KEY = "currentUser"

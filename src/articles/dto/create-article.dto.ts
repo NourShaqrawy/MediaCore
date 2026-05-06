@@ -7,10 +7,6 @@ export class CreateArticleDto {
 
     @IsNotEmpty()
     @IsString()
-    slug!: string;
-
-    @IsNotEmpty()
-    @IsString()
     content!: string;
 
     @IsNotEmpty()

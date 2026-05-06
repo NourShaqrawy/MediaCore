@@ -10,15 +10,12 @@ export class CategoryService {
   async create(createCategoryDto: CreateCategoryDto) {
     const existingCategory = await this.prisma.category.findFirst({
         where: {
-            OR: [
-                { name: createCategoryDto.name },
-                { slug: createCategoryDto.slug }
-            ]
+            name: createCategoryDto.name
         }
     });
 
     if (existingCategory) {
-        throw new BadRequestException('Category name or slug already exists');
+        throw new BadRequestException('Category name already exists');
     }
 
     return this.prisma.category.create({
@@ -33,7 +30,7 @@ export class CategoryService {
   async findOne(id: number) {
     const category = await this.prisma.category.findUnique({
       where: { id },
-      include: { articles: true } // جلب المقالات التابعة للقسم أيضاً
+      include: { articles: true } 
     });
 
     if (!category) throw new NotFoundException('Category not found');
@@ -44,17 +41,14 @@ export class CategoryService {
     const category = await this.prisma.category.findUnique({ where: { id } });
     if (!category) throw new NotFoundException('Category not found');
 
-    if (updateCategoryDto.name || updateCategoryDto.slug) {
+    if (updateCategoryDto.name) {
         const existingCategory = await this.prisma.category.findFirst({
             where: {
-                OR: [
-                    { name: updateCategoryDto.name },
-                    { slug: updateCategoryDto.slug }
-                ],
+                name: updateCategoryDto.name,
                 NOT: { id }
             }
         });
-        if (existingCategory) throw new BadRequestException('Category name or slug already exists');
+        if (existingCategory) throw new BadRequestException('Category name already exists');
     }
 
     return this.prisma.category.update({
@@ -67,7 +61,6 @@ export class CategoryService {
     const category = await this.prisma.category.findUnique({ where: { id } });
     if (!category) throw new NotFoundException('Category not found');
 
-    // التحقق مما إذا كان القسم يحتوي على مقالات قبل حذفه
     const articlesCount = await this.prisma.article.count({ where: { categoryId: id } });
     if (articlesCount > 0) {
         throw new BadRequestException('Cannot delete category with associated articles');

@@ -4,7 +4,7 @@ import { LoginDto } from "./dto/login.dto";
 import { AuthenticateService } from "./auth.service";
 import { AuthGuard } from "./guard/auth.guard";
 import { RolesGuard } from "./guard/roles.guard";
-import { Roles } from "./guard/roles.decorator";
+import { Roles } from "./decorators/roles.decorator";
 
 @Controller('auth')
 export class AuthController {

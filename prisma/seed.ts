@@ -17,7 +17,7 @@ async function main() {
   for (const role of roles) {
     await prisma.role.upsert({
       where: { code: role.code },
-      update: {}, 
+      update: {},
       create: role,
     });
   }
@@ -41,7 +41,7 @@ async function main() {
 
   if (!existingAdmin) {
     const adminRole = await prisma.role.findUnique({ where: { code: 'ADMIN' } });
-    
+
     if (adminRole) {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(adminPassword, salt);
@@ -63,20 +63,21 @@ async function main() {
     console.log('  Admin user already exists. Skipping creation.');
   }
   const defaultCategories = [
-    { name: 'Politics', slug: 'politics', description: 'Political news and articles' },
-    { name: 'Sports', slug: 'sports', description: 'Sports news globally' },
-    { name: 'Technology', slug: 'technology', description: 'Tech related news' },
-    { name: 'Economy', slug: 'economy', description: 'Global and local economics' },
+    { name: 'Politics', description: 'Political news and articles' },
+    { name: 'Sports', description: 'Sports news globally' },
+    { name: 'Technology', description: 'Tech related news' },
+    { name: 'Economy', description: 'Global and local economics' },
   ];
 
   for (const cat of defaultCategories) {
     await prisma.category.upsert({
-      where: { slug: cat.slug },
+      where: { name: cat.name },
       update: {},
       create: cat,
     });
   }
-  console.log(' Default Categories seeded successfully.');}
+  console.log(' Default Categories seeded successfully.');
+}
 
 main()
   .catch((e) => {
