@@ -1,42 +1,52 @@
-FROM node:18-alpine AS builder
+# ============================
+# 1) Build Stage
+# ============================
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Install openssl for Prisma support on Alpine
-RUN apk add --no-cache openssl
+# تثبيت المكتبات الأساسية
+RUN apk add --no-cache python3 make g++
 
-# Install dependencies
+# نسخ ملفات المشروع
 COPY package*.json ./
-COPY prisma ./prisma/
-RUN npm ci
+COPY prisma ./prisma
 
-# Generate Prisma client
+# تثبيت dependencies
+RUN npm install
+
+# توليد Prisma Client
 RUN npx prisma generate
 
-# Copy project files
+# نسخ باقي المشروع
 COPY . .
 
-# Build the project
+# بناء NestJS
 RUN npm run build
 
-# Production image
-FROM node:18-alpine
+
+# ============================
+# 2) Production Stage
+# ============================
+FROM node:20-alpine AS production
 
 WORKDIR /app
 
-# Install openssl for Prisma support on Alpine
-RUN apk add --no-cache openssl
+# تثبيت المكتبات الأساسية
+RUN apk add --no-cache python3 make g++
 
-# Copy necessary files from the builder stage
+# نسخ فقط الملفات الضرورية من مرحلة البناء
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
-COPY entrypoint.sh ./
+COPY --from=builder /app/package*.json ./
+COPY entry.sh ./entry.sh
 
-# Fix line endings for Windows & making the script executable
-RUN sed -i 's/\r$//' entrypoint.sh && chmod +x entrypoint.sh
+# إعطاء صلاحيات للتشغيل
+RUN chmod +x entry.sh
 
+# المنفذ الافتراضي
 EXPOSE 3000
 
-ENTRYPOINT ["/bin/sh", "entrypoint.sh"]
+# تشغيل التطبيق عبر entry.sh
+CMD ["./entry.sh"]
