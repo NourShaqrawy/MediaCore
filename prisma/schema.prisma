@@ -10,6 +10,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  schemas  = ["public", "newSchema"]
 }
 
 enum ArticleStatus {
@@ -17,6 +18,7 @@ enum ArticleStatus {
   PENDING
   PUBLISHED
   REJECTED
+  @@schema("newSchema")
 }
 
 model Role {
@@ -29,6 +31,7 @@ model Role {
   users       User[]
 
   @@map("roles")
+  @@schema("public")
 }
 
 model User {
@@ -47,6 +50,7 @@ model User {
   @@index([roleId])
   @@index([isActive])
   @@map("users")
+  @@schema("public")
 }
 
 model Category {
@@ -58,6 +62,7 @@ model Category {
   updatedAt   DateTime  @updatedAt
 
   @@map("categories")
+  @@schema("newSchema")
 }
 
 model Article {
@@ -78,4 +83,5 @@ model Article {
   @@index([authorId])
   @@index([categoryId])
   @@map("articles")
+  @@schema("newSchema")
 }
