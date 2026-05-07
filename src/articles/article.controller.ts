@@ -14,7 +14,7 @@ import { UpdateArticleStatusDto } from './dto/update-article-status.dto';
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
-  @Get()
+  @Get('find/:status')
   findAll(@Query('status') status?: ArticleStatus) {
     return this.articleService.findAll(status);
   }
